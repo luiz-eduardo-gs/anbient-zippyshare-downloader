@@ -26,7 +26,7 @@ def access_url_and_return_content(url: str):
   
   return html_content
 
-def get_link(content: str) -> str:
+def get_link(base_url: str, content: str) -> str:
   """
     Get the link from the html content extracted
   """
@@ -38,7 +38,7 @@ def get_link(content: str) -> str:
   remove_plus_operator = "".join(re.split("\+", string_with_eval))
   extracted_link = "".join(re.split('\"', remove_plus_operator)).replace(' ', '')[:-1]
 
-  return "https://www62.zippyshare.com" + extracted_link
+  return base_url + extracted_link
 
 def download_anime(url: str, to: str, filename: str) -> None:
   """
@@ -49,8 +49,10 @@ def download_anime(url: str, to: str, filename: str) -> None:
 
 def main():
   for url in open_file_and_return_urls():
-    html_content = access_url_and_return_content(url.decode('utf8'))
-    link = get_link(html_content)
+    decoded_url = url.decode('utf8')
+    html_content = access_url_and_return_content(decoded_url)
+    base_url = decoded_url.split('/v')[0]
+    link = get_link(base_url, html_content)
     print("Downloading link: " + link)
     download_anime(link, os.path.join(os.path.dirname(__file__), 'videos'), link.split("/")[-1])
     print("Download complete!")
